@@ -2,9 +2,9 @@
 #include <stdlib.h>
 #include "includes.h"
 
-struct cell(
+struct cell {
 	int state;
-);
+};
 
 typedef struct cell Cell;
 
