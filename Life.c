@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include "includes.h"
 
-struct cell (
+struct cell(
 	int state;
 );
 
-void init(struct cell **grid);
-void sim(struct cell **grid);
+typedef struct cell Cell;
+
+void init(Cell **grid);
+void sim(Cell **grid);
 
 int main() {
 	initscr();
@@ -17,17 +19,24 @@ int main() {
 	cbreak();
 	curs_set(0);
 	
-	struct cell **gameGrid = malloc(LINES*COLS*sizeof(struct cell));
+	Cell **gameGrid = malloc(LINES);
+	
+	for (int i=0; i<LINES; i++)
+		gameGrid[i] = malloc(COLS);
 
 	init(gameGrid);
 	sim(gameGrid);
 		
 	endwin();
+	
+	for (int i=0; i<LINES; i++)
+		free(gameGrid[i]);
+
 	free(gameGrid);
 	return 0;
 }
 
-void init(struct cell **grid) {
+void init(Cell **grid) {
 	curs_set(0);
 	for (int i=0; i<LINES; i++) {
 		for (int j=0; j<COLS; j++) {
@@ -58,6 +67,6 @@ void init(struct cell **grid) {
 	}	
 }
 
-void sim(struct cell **grid) {
+void sim(Cell **grid) {
 	curs_set(0);
 }
