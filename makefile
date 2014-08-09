@@ -8,11 +8,11 @@ OUT = Ncursesoflife
 all: obj
 
 obj: $(OBJS)
-	$(CC) $(CFLAGS) $(IBS) $(OBJS) -o $(OUT)
+	$(CC) $(CFLAGS) $(LIBS) $(OBJS) -o $(OUT)
 	rm -rf *.o
 
 .c.o:
-	$(CC) $(CFLAGS) -c $< -o $@
+	$(CC) $(CFLAGS) $(LIBS) -c $< -o $@
 
 clean:
 	rm -rf *.o $(OUT) *~
