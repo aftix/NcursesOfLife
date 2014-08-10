@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "includes.h"
 
 typedef struct cell {
@@ -73,4 +74,46 @@ void init(Cell *grid) {
 
 void sim(Cell *grid) {
 	curs_set(0);
+
+	timeout(-1);
+	char ch;
+	Cell *next = malloc(LINES*COLS*sizeof(Cell));
+
+	while (1) {
+		if (ch == 'q') {
+			free(next);
+			return;
+		}
+
+		memcpy(next, grid, sizeof(Cell)*LINES*COLS);
+
+		int count = 0;
+		for (int i=0; i<LINES; i++) {
+			for (int j=0; j<COLS; j++) {
+				if (j > 0) count += grid[i*LINES + j - 1].state;
+				if (j < COLS-1) count += grid[i*LINES + j + 1].state;
+				if (i > 0) count += grid[(i-1)*LINES + j].state;
+				if (i < LINES-1) count += grid[(i+1)*LINES + j]. state;
+				if (j > 0 && i > 0) count += grid[(i-1)*LINES + j - 1].state;
+				if (j > 0 && i < LINES-1) count += grid[(i+1)*LINES + j - 1].state;
+				if (j < COLS-1 && i > 0) count += grid[(i-1)*LINES + j + 1].state;
+				if (j < COLS-1 && i < LINES-1) count += grid[(i+1)*LINES + j + 1].state;
+				
+				if (count == 3) next[i*LINES + j].state = 1;
+				if (count < 2) next[i*LINES + j].state = 0;
+				if (count > 3) next[i*LINES + j].state = 0;			
+			}
+		}
+
+		memcpy(grid, next, sizeof(Cell)*LINES*COLS);
+
+		for (int i=0; i<LINES; i++) {
+			for (int j=0; i<COLS; j++) {
+				move(i, j);
+				addch(grid[i*LINES + j].state == 0 ? ' ' : '#');
+			}
+		}
+
+		ch = getch();
+	}
 }
