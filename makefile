@@ -1,6 +1,6 @@
 CC= gcc
 SRC= Life.c
-CFLAGS= -DNONW -std=c11
+CFLAGS= -DNONW -std=c11 -g
 OBJS= $(SRC:.c=.o)
 LIBS= -lncurses
 OUT = Ncursesoflife

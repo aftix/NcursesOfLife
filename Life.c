@@ -8,8 +8,8 @@ struct cell {
 
 typedef struct cell Cell;
 
-void init(Cell **grid);
-void sim(Cell **grid);
+void init(Cell *grid);
+void sim(Cell *grid);
 
 int main() {
 	initscr();
@@ -19,28 +19,22 @@ int main() {
 	cbreak();
 	curs_set(0);
 	
-	Cell **gameGrid = malloc(LINES);
+	Cell *gameGrid = malloc(LINES * COLS * sizeof(Cell));
 	
-	for (int i=0; i<LINES; i++)
-		gameGrid[i] = malloc(COLS);
-
 	init(gameGrid);
 	sim(gameGrid);
 		
 	endwin();
-	
-	for (int i=0; i<LINES; i++)
-		free(gameGrid[i]);
 
 	free(gameGrid);
 	return 0;
 }
 
-void init(Cell **grid) {
+void init(Cell *grid) {
 	curs_set(0);
 	for (int i=0; i<LINES; i++) {
 		for (int j=0; j<COLS; j++) {
-			grid[i][j].state = 0;
+			grid[i*LINES + j].state = 0;
 		}
 	}
 
@@ -62,11 +56,11 @@ void init(Cell **grid) {
 		if (y < 0) y = 0;
 		if (x < 0) x = 0;
 
-		if (ch == '#') grid[y][x].state = 1;
-		if (ch == ' ') grid[y][x].state = 0;
+		if (ch == '#') grid[y*LINES + x].state = 1;
+		if (ch == ' ') grid[y*LINES + x].state = 0;
 	}	
 }
 
-void sim(Cell **grid) {
+void sim(Cell *grid) {
 	curs_set(0);
 }
