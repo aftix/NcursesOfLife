@@ -2,11 +2,9 @@
 #include <stdlib.h>
 #include "includes.h"
 
-struct cell {
+typedef struct cell {
 	int state;
-};
-
-typedef struct cell Cell;
+} Cell;
 
 void init(Cell *grid);
 void sim(Cell *grid);
@@ -18,6 +16,7 @@ int main() {
 	noecho();
 	cbreak();
 	curs_set(0);
+	refresh();
 	
 	Cell *gameGrid = malloc(LINES * COLS * sizeof(Cell));
 	
@@ -31,7 +30,7 @@ int main() {
 }
 
 void init(Cell *grid) {
-	curs_set(0);
+	curs_set(1);
 	for (int i=0; i<LINES; i++) {
 		for (int j=0; j<COLS; j++) {
 			grid[i*LINES + j].state = 0;
@@ -56,9 +55,20 @@ void init(Cell *grid) {
 		if (y < 0) y = 0;
 		if (x < 0) x = 0;
 
-		if (ch == '#') grid[y*LINES + x].state = 1;
-		if (ch == ' ') grid[y*LINES + x].state = 0;
-	}	
+		if (ch == '#') {
+			grid[y*LINES + x].state = 1;
+			move(y,x);
+			addch('#');
+		}
+
+		if (ch == ' ') {
+			grid[y*LINES + x].state = 0;
+			move(y, x);
+			addch(' ');
+		}
+		
+		move(y, x);
+	}
 }
 
 void sim(Cell *grid) {
