@@ -108,7 +108,7 @@ void sim(Cell *grid) {
 		memcpy(grid, next, sizeof(Cell)*LINES*COLS);
 
 		for (int i=0; i<LINES; i++) {
-			for (int j=0; i<COLS; j++) {
+			for (int j=0; j<COLS; j++) {
 				move(i, j);
 				addch(grid[i*LINES + j].state == 0 ? ' ' : '#');
 			}
