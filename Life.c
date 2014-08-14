@@ -18,8 +18,11 @@ int main() {
 	cbreak();
 	curs_set(0);
 	refresh();
+
+	int MAXX, MAXY;
+	getmaxyx(stdscr, MAXY, MAXX);
 	
-	Cell *gameGrid = malloc(LINES * COLS * sizeof(Cell));
+	Cell *gameGrid = malloc(MAXY * MAXX * sizeof(Cell));
 	
 	init(gameGrid);
 	sim(gameGrid);
@@ -32,9 +35,12 @@ int main() {
 
 void init(Cell *grid) {
 	curs_set(1);
-	for (int i=0; i<LINES; i++) {
-		for (int j=0; j<COLS; j++) {
-			grid[i*LINES + j].state = 0;
+	int MAX_X, MAX_Y;
+	getmaxyx(stdscr, MAX_Y, MAX_X);
+
+	for (int i=0; i<MAX_Y; i++) {
+		for (int j=0; j<MAX_X; j++) {
+			grid[i*MAX_X + j].state = 0;
 		}
 	}
 
@@ -51,19 +57,19 @@ void init(Cell *grid) {
 		if (ch == 'a' || ch == KEY_LEFT) x--;
 		if (ch == 'd' || ch == KEY_RIGHT) x++;
 
-		if (y > LINES-1) y = LINES-1;
-		if (x > COLS-1) x = COLS-1;
+		if (y > MAX_Y-1) y = MAX_Y-1;
+		if (x > MAX_X-1) x = MAX_X-1;
 		if (y < 0) y = 0;
 		if (x < 0) x = 0;
 
 		if (ch == '#' || ch == '3') {
-			grid[y*LINES + x].state = 1;
+			grid[y*MAX_X + x].state = 1;
 			move(y,x);
 			addch('#');
 		}
 
 		if (ch == ' ') {
-			grid[y*LINES + x].state = 0;
+			grid[y*MAX_X + x].state = 0;
 			move(y, x);
 			addch(' ');
 		}
@@ -74,10 +80,12 @@ void init(Cell *grid) {
 
 void sim(Cell *grid) {
 	curs_set(0);
+	int MAX_X, MAX_Y;
+	getmaxyx(stdscr, MAX_Y, MAX_X);
 
 	timeout(-1);
 	int ch;
-	Cell *next = malloc(LINES*COLS*sizeof(Cell));
+	Cell *next = malloc(MAX_Y*MAX_X*sizeof(Cell));
 
 	while (1) {
 		if (ch == 'q') {
@@ -85,34 +93,34 @@ void sim(Cell *grid) {
 			return;
 		}
 
-		memcpy(next, grid, sizeof(Cell)*LINES*COLS);
+		memcpy(next, grid, sizeof(Cell)*MAX_Y*MAX_X);
 
 		int count = 0;
-		for (int i=0; i<LINES; i++) {
-			for (int j=0; j<COLS; j++) {
-				if (j > 0) count += grid[i*LINES + j - 1].state;
-				if (j < COLS-1) count += grid[i*LINES + j + 1].state;
-				if (i > 0) count += grid[(i-1)*LINES + j].state;
-				if (i < LINES-1) count += grid[(i+1)*LINES + j].state;
-				if (j > 0 && i > 0) count += grid[(i-1)*LINES + j - 1].state;
-				if (j > 0 && i < LINES-1) count += grid[(i+1)*LINES + j - 1].state;
-				if (j < COLS-1 && i > 0) count += grid[(i-1)*LINES + j + 1].state;
-				if (j < COLS-1 && i < LINES-1) count += grid[(i+1)*LINES + j + 1].state;
+		for (int i=0; i<MAX_Y; i++) {
+			for (int j=0; j<MAX_X; j++) {
+				if (j > 0) count += grid[i*MAX_X + j - 1].state;
+				if (j < MAX_X-1) count += grid[i*MAX_X + j + 1].state;
+				if (i > 0) count += grid[(i-1)*MAX_X + j].state;
+				if (i < MAX_Y-1) count += grid[(i+1)*MAX_X + j].state;
+				if (j > 0 && i > 0) count += grid[(i-1)*MAX_X + j - 1].state;
+				if (j > 0 && i < MAX_Y-1) count += grid[(i+1)*MAX_X + j - 1].state;
+				if (j < MAX_X-1 && i > 0) count += grid[(i-1)*MAX_X + j + 1].state;
+				if (j < MAX_X-1 && i < MAX_Y-1) count += grid[(i+1)*MAX_X + j + 1].state;
 				
-				if (count == 3) next[i*LINES + j].state = 1;
-				if (count < 2) next[i*LINES + j].state = 0;
-				if (count > 3) next[i*LINES + j].state = 0;			
+				if (count == 3) next[i*MAX_X + j].state = 1;
+				else if (count < 2) next[i*MAX_X + j].state = 0;
+				else if (count > 3) next[i*MAX_X + j].state = 0;			
 				
 				count = 0;
 			}
 		}
 
-		memcpy(grid, next, sizeof(Cell)*LINES*COLS);
+		memcpy(grid, next, sizeof(Cell)*MAX_Y*MAX_X);
 
-		for (int i=0; i<LINES; i++) {
-			for (int j=0; j<COLS; j++) {
+		for (int i=0; i<MAX_Y; i++) {
+			for (int j=0; j<MAX_X; j++) {
 				move(i, j);
-				addch(grid[i*LINES + j].state == 0 ? ' ' : '#');
+				addch(grid[i*MAX_X + j].state == 0 ? ' ' : '#');
 			}
 		}
 
