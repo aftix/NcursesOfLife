@@ -56,7 +56,7 @@ void init(Cell *grid) {
 		if (y < 0) y = 0;
 		if (x < 0) x = 0;
 
-		if (ch == '#') {
+		if (ch == '#' || ch == '3') {
 			grid[y*LINES + x].state = 1;
 			move(y,x);
 			addch('#');
