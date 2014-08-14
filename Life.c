@@ -102,6 +102,8 @@ void sim(Cell *grid) {
 				if (count == 3) next[i*LINES + j].state = 1;
 				if (count < 2) next[i*LINES + j].state = 0;
 				if (count > 3) next[i*LINES + j].state = 0;			
+				
+				count = 0;
 			}
 		}
 
