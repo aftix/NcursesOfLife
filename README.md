@@ -3,14 +3,15 @@ NcursesOfLife
 
 Text based Conway's Game of Life
 
-Init stage:
-WASD, Arrow keys = move
-q = quit init stage
-
 SIM stage:
 p = play/pause
 n = step
 + = faster
 - = slower
-i = re-init
 q = quit
+
+WHEN PAUSED:
+WASD / arrow keys = move
+space = toggle cell
+
+Game starts out paused.  All SIM keystrokes will work when paused (step only works paused).  

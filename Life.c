@@ -45,45 +45,19 @@ void init(Cell *grid) {
 	}
 
 	erase();
-
-	int y=0, x=0;
-		
-	timeout(10);
-	while (1) {
-		int ch = getch();
-		
-		if (ch == 'q') return;
-		
-		if (ch == 'w' || ch == KEY_UP) y--;
-		if (ch == 's' || ch == KEY_DOWN) y++;
-		if (ch == 'a' || ch == KEY_LEFT) x--;
-		if (ch == 'd' || ch == KEY_RIGHT) x++;
-
-		if (y > MAX_Y-1) y = MAX_Y-1;
-		if (x > MAX_X-1) x = MAX_X-1;
-		if (y < 0) y = 0;
-		if (x < 0) x = 0;
-
-		if (ch == ' ') {
-			grid[y*MAX_X + x].state = grid[y*MAX_X + x].state ? 0 : 1;
-			move(y, x);
-			addch(grid[y*MAX_X + x].state ? '#' : ' ');
-		}
-		
-		move(y, x);
-	}
 }
 
 void sim(Cell *grid) {
-	curs_set(0);
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);
-	int curr = 0;
+	int curr = 1;
 
 	int ch;
 	Cell *next = malloc(MAX_Y*MAX_X*sizeof(Cell));
 
 	double speed = 100;
+
+	int y = 0, x = 0;
 
 	while (1) {
 		if (ch == 'q') {
@@ -99,6 +73,8 @@ void sim(Cell *grid) {
 		if (ch == 'i') init(grid);
 
 		if (speed < 1) speed = 1;
+
+		if (!curr) curs_set(0);
 
 		memcpy(next, grid, sizeof(Cell)*MAX_Y*MAX_X);
 
@@ -160,7 +136,15 @@ void sim(Cell *grid) {
 		} else {
 			timeout(10);
 			while (1) {
+				curs_set(1);				
+
 				ch = getch();
+				
+				if (ch == 'w' || ch == KEY_UP) y--;
+				if (ch == 's' || ch == KEY_DOWN) y++;
+				if (ch == 'a' || ch == KEY_LEFT) x--;
+				if (ch == 'd' || ch == KEY_RIGHT) x++;
+
 				if (ch == 'n') break;
 				if (ch == 'p') {
 					curr = 0;
@@ -173,11 +157,19 @@ void sim(Cell *grid) {
 				}
 				if (ch == '+') speed -= 10;
 				if (ch == '-') speed += 10;
-			
-				if (ch == 'i') {
-					init(grid);
-					break;
+
+				if (y > MAX_Y-1) y = MAX_Y-1;
+				if (x > MAX_X-1) x = MAX_X-1;
+				if (y < 0) y = 0;
+				if (x < 0) x = 0;
+
+				if (ch == ' ') {
+					grid[y*MAX_X + x].state = grid[y*MAX_X + x].state ? 0 : 1;
+					move(y, x);
+					addch(grid[y*MAX_X + x].state ? '#' : ' ');
 				}
+		
+				move(y, x);
 			}
 		}
 	}
