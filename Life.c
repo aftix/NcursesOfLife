@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
-#include <unistd.h>
 #include "includes.h"
 
 typedef struct cell {
@@ -45,6 +43,8 @@ void init(Cell *grid) {
 			grid[i*MAX_X + j].state = 0;
 		}
 	}
+
+	erase();
 
 	int y=0, x=0;
 		
@@ -95,6 +95,8 @@ void sim(Cell *grid) {
 
 		if (ch == '+') speed -= 10;
 		if (ch == '-') speed += 10;
+
+		if (ch == 'i') init(grid);
 
 		if (speed < 1) speed = 1;
 
@@ -171,6 +173,11 @@ void sim(Cell *grid) {
 				}
 				if (ch == '+') speed -= 10;
 				if (ch == '-') speed += 10;
+			
+				if (ch == 'i') {
+					init(grid);
+					break;
+				}
 			}
 		}
 	}
