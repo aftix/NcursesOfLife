@@ -99,13 +99,36 @@ void sim(Cell *grid) {
 		for (int i=0; i<MAX_Y; i++) {
 			for (int j=0; j<MAX_X; j++) {
 				if (j > 0) count += grid[i*MAX_X + j - 1].state;
+				else count += grid[i*MAX_X + MAX_X-1].state;
+				
 				if (j < MAX_X-1) count += grid[i*MAX_X + j + 1].state;
+				else count += grid[i*MAX_X].state;
+
 				if (i > 0) count += grid[(i-1)*MAX_X + j].state;
+				else count+= grid[(MAX_Y-1)*MAX_X + j].state;
+
 				if (i < MAX_Y-1) count += grid[(i+1)*MAX_X + j].state;
+				else count += grid[j].state;
+
 				if (j > 0 && i > 0) count += grid[(i-1)*MAX_X + j - 1].state;
+				else if (j>0 && !(i > 0)) count += grid[(MAX_Y-1)*MAX_X + j-1].state;
+				else if (!(j>0) && i > 0) count += grid[(i-1)*MAX_X + MAX_X-1].state;
+				else if (!(j>0) && !(i>0)) count += grid[(MAX_Y-1)*MAX_X + MAX_X-1].state;
+
 				if (j > 0 && i < MAX_Y-1) count += grid[(i+1)*MAX_X + j - 1].state;
+				else if (j > 0 && !(i < MAX_Y-1)) count += grid[j-1].state;
+				else if (!(j > 0) && i < MAX_Y-1) count += grid[(i+1)*MAX_X + MAX_X-1].state;
+				else if (!(j > 0) && !(i < MAX_Y-1)) count += grid[MAX_X-1].state;
+
 				if (j < MAX_X-1 && i > 0) count += grid[(i-1)*MAX_X + j + 1].state;
+				else if (j < MAX_X-1 && !(i > 0)) count += grid[(MAX_Y-1)*MAX_X + j + 1].state;
+				else if (!(j < MAX_X-1) && i > 0) count += grid[(i-1)*MAX_X].state;
+				else if (!(j < MAX_X-1) && !(i > 0)) count += grid[(MAX_Y-1)*MAX_X].state;
+
 				if (j < MAX_X-1 && i < MAX_Y-1) count += grid[(i+1)*MAX_X + j + 1].state;
+				else if (j < MAX_X-1 && !(i < MAX_Y-1)) count += grid[j+1].state;
+				else if (!(j < MAX_X-1) && i < MAX_Y-1) count += grid[(i+1)*MAX_X].state;
+				else if (!(j < MAX_X-1) && !(i < MAX_Y-1)) count += grid[0].state;
 				
 				if (count == 3) next[i*MAX_X + j].state = 1;
 				else if (count < 2) next[i*MAX_X + j].state = 0;
