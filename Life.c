@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <unistd.h>
 #include "includes.h"
 
 typedef struct cell {
@@ -62,16 +64,10 @@ void init(Cell *grid) {
 		if (y < 0) y = 0;
 		if (x < 0) x = 0;
 
-		if (ch == '#' || ch == '3') {
-			grid[y*MAX_X + x].state = 1;
-			move(y,x);
-			addch('#');
-		}
-
 		if (ch == ' ') {
-			grid[y*MAX_X + x].state = 0;
+			grid[y*MAX_X + x].state = grid[y*MAX_X + x].state ? 0 : 1;
 			move(y, x);
-			addch(' ');
+			addch(grid[y*MAX_X + x].state ? '#' : ' ');
 		}
 		
 		move(y, x);
@@ -82,16 +78,25 @@ void sim(Cell *grid) {
 	curs_set(0);
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);
+	int curr = 0;
 
-	timeout(-1);
 	int ch;
 	Cell *next = malloc(MAX_Y*MAX_X*sizeof(Cell));
+
+	double speed = 100;
 
 	while (1) {
 		if (ch == 'q') {
 			free(next);
 			return;
 		}
+
+		if (ch == 'p') curr = curr == 1 ? 0 : 1;
+
+		if (ch == '+') speed -= 10;
+		if (ch == '-') speed += 10;
+
+		if (speed < 1) speed = 1;
 
 		memcpy(next, grid, sizeof(Cell)*MAX_Y*MAX_X);
 
@@ -146,7 +151,27 @@ void sim(Cell *grid) {
 				addch(grid[i*MAX_X + j].state == 0 ? ' ' : '#');
 			}
 		}
-
-		ch = getch();
+ 
+		if (!curr) {
+			timeout(speed);
+			ch = getch();
+		} else {
+			timeout(10);
+			while (1) {
+				ch = getch();
+				if (ch == 'n') break;
+				if (ch == 'p') {
+					curr = 0;
+					ch = ' ';
+					break;
+				}
+				if (ch == 'q') {
+					free(next);
+					return;
+				}
+				if (ch == '+') speed -= 10;
+				if (ch == '-') speed += 10;
+			}
+		}
 	}
 }
