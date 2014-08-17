@@ -3,7 +3,7 @@ SRC= Life.c
 CFLAGS= -DNONW -std=c11 -g
 OBJS= $(SRC:.c=.o)
 LIBS= -lncurses
-OUT = Ncursesoflife
+OUT = NcursesOfLife
 
 all: obj
 
@@ -16,3 +16,7 @@ obj: $(OBJS)
 
 clean:
 	rm -rf *.o $(OUT) *~
+
+install: 
+	cp ./NcursesOfLife /usr/bin/
+
