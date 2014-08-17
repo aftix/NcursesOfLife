@@ -18,5 +18,5 @@ clean:
 	rm -rf *.o $(OUT) *~
 
 install: 
-	cp ./NcursesOfLife /usr/bin/
+	cp ./NcursesOfLife $(DESTDIR) 
 
