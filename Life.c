@@ -22,11 +22,13 @@ int main() {
 	start_color();
 	use_default_colors();
 	init_pair(1, COLOR_YELLOW, -1);
+	init_pair(2, COLOR_WHITE, COLOR_BLACK);
 	attron(COLOR_PAIR(1));
 
 	int MAXX, MAXY;
 	getmaxyx(stdscr, MAXY, MAXX);
-	
+	MAXY -= 1;	
+
 	Cell *gameGrid = malloc(MAXY * MAXX * sizeof(Cell));
 	
 	init(gameGrid);
@@ -42,6 +44,7 @@ void init(Cell *grid) {
 	curs_set(1);
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);
+	MAX_Y -=1;
 
 	for (int i=0; i<MAX_Y; i++) {
 		for (int j=0; j<MAX_X; j++) {
@@ -55,6 +58,7 @@ void init(Cell *grid) {
 void sim(Cell *grid) {
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);
+	MAX_Y -= 1;
 	int curr = 1;
 
 	int ch;
@@ -64,8 +68,24 @@ void sim(Cell *grid) {
 
 	int y = 0, x = 0;
 
+	int iter = 0;
+	
+	attroff(COLOR_PAIR(1));
+	attron(A_REVERSE | COLOR_PAIR(2));
+	move(MAX_Y, 0);
+	addstr("Iteration: ");
+	attroff(A_REVERSE | COLOR_PAIR(2));
+	attron(COLOR_PAIR(1));
+
 	while (1) {
-		attroff(A_REVERSE);
+		attroff(COLOR_PAIR(1));
+		attron(COLOR_PAIR(2) | A_REVERSE);
+		char tmp[15];
+		sprintf(tmp, "%d", iter);
+		move(MAX_Y, 11);
+		addstr(tmp);
+		attroff(A_REVERSE | COLOR_PAIR(2));
+		attron(COLOR_PAIR(1));
 	
 		if (ch == 'q') {
 			free(next);
@@ -168,6 +188,8 @@ void sim(Cell *grid) {
 			}
 		}
  
+		iter++;
+
 		if (!curr) {
 			timeout(speed);
 			ch = getch();
