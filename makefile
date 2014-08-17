@@ -17,6 +17,5 @@ obj: $(OBJS)
 clean:
 	rm -rf *.o $(OUT) *~
 
-install: 
-	cp ./NcursesOfLife $(DESTDIR) 
-
+install:
+	cp ./NcursesOfLife $(DESTDIR)
