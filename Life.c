@@ -19,6 +19,11 @@ int main() {
 	curs_set(0);
 	refresh();
 
+	start_color();
+	use_default_colors();
+	init_pair(1, COLOR_YELLOW, -1);
+	attron(COLOR_PAIR(1));
+
 	int MAXX, MAXY;
 	getmaxyx(stdscr, MAXY, MAXX);
 	
@@ -60,6 +65,8 @@ void sim(Cell *grid) {
 	int y = 0, x = 0;
 
 	while (1) {
+		attroff(A_REVERSE);
+	
 		if (ch == 'q') {
 			free(next);
 			return;
@@ -167,6 +174,7 @@ void sim(Cell *grid) {
 		} else {
 			timeout(10);
 			while (1) {
+				attron(A_REVERSE);
 				curs_set(1);				
 
 				ch = getch();
