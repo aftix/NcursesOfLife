@@ -55,7 +55,7 @@ void sim(Cell *grid) {
 	int ch;
 	Cell *next = malloc(MAX_Y*MAX_X*sizeof(Cell));
 
-	double speed = 100;
+	int speed = 100;
 
 	int y = 0, x = 0;
 
@@ -65,16 +65,22 @@ void sim(Cell *grid) {
 			return;
 		}
 
-		if (ch == 'p') curr = curr == 1 ? 0 : 1;
+		if (ch == 'p') 
+			curr = curr == 1 ? 0 : 1;
 
-		if (ch == '+') speed -= 10;
-		if (ch == '-') speed += 10;
+		if (ch == '+') 
+			speed -= 10;
+		if (ch == '-') 
+			speed += 10;
 
-		if (ch == 'i') init(grid);
+		if (ch == 'i') 
+			init(grid);
 
-		if (speed < 1) speed = 1;
+		if (speed < 1) 
+			speed = 1;
 
-		if (!curr) curs_set(0);
+		if (!curr) 
+			curs_set(0);
 
 		memcpy(next, grid, sizeof(Cell)*MAX_Y*MAX_X);
 
@@ -84,38 +90,63 @@ void sim(Cell *grid) {
 				if (j > 0) count += grid[i*MAX_X + j - 1].state;
 				else count += grid[i*MAX_X + MAX_X-1].state;
 				
-				if (j < MAX_X-1) count += grid[i*MAX_X + j + 1].state;
-				else count += grid[i*MAX_X].state;
+				if (j < MAX_X-1)
+					count += grid[i*MAX_X + j + 1].state;
+				else 
+					count += grid[i*MAX_X].state;
 
-				if (i > 0) count += grid[(i-1)*MAX_X + j].state;
-				else count+= grid[(MAX_Y-1)*MAX_X + j].state;
+				if (i > 0) 
+					count += grid[(i-1)*MAX_X + j].state;
+				else 
+					count+= grid[(MAX_Y-1)*MAX_X + j].state;
 
-				if (i < MAX_Y-1) count += grid[(i+1)*MAX_X + j].state;
-				else count += grid[j].state;
+				if (i < MAX_Y-1) 
+					count += grid[(i+1)*MAX_X + j].state;
+				else 
+					count += grid[j].state;
 
-				if (j > 0 && i > 0) count += grid[(i-1)*MAX_X + j - 1].state;
-				else if (j>0 && !(i > 0)) count += grid[(MAX_Y-1)*MAX_X + j-1].state;
-				else if (!(j>0) && i > 0) count += grid[(i-1)*MAX_X + MAX_X-1].state;
-				else if (!(j>0) && !(i>0)) count += grid[(MAX_Y-1)*MAX_X + MAX_X-1].state;
+				if (j > 0 && i > 0) 
+					count += grid[(i-1)*MAX_X + j - 1].state;
+				else if (j>0 && !(i > 0)) 
+					count += grid[(MAX_Y-1)*MAX_X + j-1].state;
+				else if (!(j>0) && i > 0)
+					count += grid[(i-1)*MAX_X + MAX_X-1].state;
+				else if (!(j>0) && !(i>0))
+					count += grid[(MAX_Y-1)*MAX_X + MAX_X-1].state;
 
-				if (j > 0 && i < MAX_Y-1) count += grid[(i+1)*MAX_X + j - 1].state;
-				else if (j > 0 && !(i < MAX_Y-1)) count += grid[j-1].state;
-				else if (!(j > 0) && i < MAX_Y-1) count += grid[(i+1)*MAX_X + MAX_X-1].state;
-				else if (!(j > 0) && !(i < MAX_Y-1)) count += grid[MAX_X-1].state;
+				if (j > 0 && i < MAX_Y-1)
+					count += grid[(i+1)*MAX_X + j - 1].state;
+				else if (j > 0 && !(i < MAX_Y-1))
+					count += grid[j-1].state;
+				else if (!(j > 0) && i < MAX_Y-1)
+					count += grid[(i+1)*MAX_X + MAX_X-1].state;
+				else if (!(j > 0) && !(i < MAX_Y-1))
+					count += grid[MAX_X-1].state;
 
-				if (j < MAX_X-1 && i > 0) count += grid[(i-1)*MAX_X + j + 1].state;
-				else if (j < MAX_X-1 && !(i > 0)) count += grid[(MAX_Y-1)*MAX_X + j + 1].state;
-				else if (!(j < MAX_X-1) && i > 0) count += grid[(i-1)*MAX_X].state;
-				else if (!(j < MAX_X-1) && !(i > 0)) count += grid[(MAX_Y-1)*MAX_X].state;
+				if (j < MAX_X-1 && i > 0)
+					count += grid[(i-1)*MAX_X + j + 1].state;
+				else if (j < MAX_X-1 && !(i > 0))
+					count += grid[(MAX_Y-1)*MAX_X + j + 1].state;
+				else if (!(j < MAX_X-1) && i > 0)
+					count += grid[(i-1)*MAX_X].state;
+				else if (!(j < MAX_X-1) && !(i > 0))
+					count += grid[(MAX_Y-1)*MAX_X].state;
 
-				if (j < MAX_X-1 && i < MAX_Y-1) count += grid[(i+1)*MAX_X + j + 1].state;
-				else if (j < MAX_X-1 && !(i < MAX_Y-1)) count += grid[j+1].state;
-				else if (!(j < MAX_X-1) && i < MAX_Y-1) count += grid[(i+1)*MAX_X].state;
-				else if (!(j < MAX_X-1) && !(i < MAX_Y-1)) count += grid[0].state;
+				if (j < MAX_X-1 && i < MAX_Y-1)
+					count += grid[(i+1)*MAX_X + j + 1].state;
+				else if (j < MAX_X-1 && !(i < MAX_Y-1))
+					count += grid[j+1].state;
+				else if (!(j < MAX_X-1) && i < MAX_Y-1)
+					count += grid[(i+1)*MAX_X].state;
+				else if (!(j < MAX_X-1) && !(i < MAX_Y-1))
+					count += grid[0].state;
 				
-				if (count == 3) next[i*MAX_X + j].state = 1;
-				else if (count < 2) next[i*MAX_X + j].state = 0;
-				else if (count > 3) next[i*MAX_X + j].state = 0;			
+				if (count == 3)
+					next[i*MAX_X + j].state = 1;
+				else if (count < 2)
+					next[i*MAX_X + j].state = 0;
+				else if (count > 3)
+					next[i*MAX_X + j].state = 0;			
 				
 				count = 0;
 			}
@@ -140,28 +171,42 @@ void sim(Cell *grid) {
 
 				ch = getch();
 				
-				if (ch == 'w' || ch == KEY_UP) y--;
-				if (ch == 's' || ch == KEY_DOWN) y++;
-				if (ch == 'a' || ch == KEY_LEFT) x--;
-				if (ch == 'd' || ch == KEY_RIGHT) x++;
+				if (ch == 'w' || ch == KEY_UP)
+					y--;
+				if (ch == 's' || ch == KEY_DOWN)
+					y++;
+				if (ch == 'a' || ch == KEY_LEFT)
+					x--;
+				if (ch == 'd' || ch == KEY_RIGHT)
+					x++;
 
-				if (ch == 'n') break;
+				if (ch == 'n')
+					break;
+				
 				if (ch == 'p') {
 					curr = 0;
 					ch = ' ';
 					break;
 				}
+
 				if (ch == 'q') {
 					free(next);
 					return;
 				}
-				if (ch == '+') speed -= 10;
-				if (ch == '-') speed += 10;
 
-				if (y > MAX_Y-1) y = MAX_Y-1;
-				if (x > MAX_X-1) x = MAX_X-1;
-				if (y < 0) y = 0;
-				if (x < 0) x = 0;
+				if (ch == '+')
+					speed -= 10;
+				if (ch == '-')
+					speed += 10;
+
+				if (y > MAX_Y-1)
+					y = MAX_Y-1;
+				if (x > MAX_X-1)
+					x = MAX_X-1;
+				if (y < 0)
+					y = 0;
+				if (x < 0)
+					x = 0;
 
 				if (ch == ' ') {
 					grid[y*MAX_X + x].state = grid[y*MAX_X + x].state ? 0 : 1;
