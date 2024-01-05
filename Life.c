@@ -11,12 +11,13 @@ void init(Cell *grid);
 void sim(Cell *grid);
 
 int main() {
+	// Set up ncurses screen environment
 	initscr();
 	erase();
 	keypad(stdscr, TRUE);
 	noecho();
 	cbreak();
-	curs_set(0);
+	curs_set(0);		// set cursor to invisible
 	refresh();
 
 	start_color();
@@ -25,43 +26,56 @@ int main() {
 	init_pair(2, COLOR_WHITE, COLOR_BLACK);
 	attron(COLOR_PAIR(1));
 
+	// Set the screen dimensions based on current display
 	int MAXX, MAXY;
 	getmaxyx(stdscr, MAXY, MAXX);
 	MAXY -= 1;	
 
+	// Environment grid is created to be a memory block based on the size of the
+	// ncurses screen dimensions
 	Cell *gameGrid = malloc(MAXY * MAXX * sizeof(Cell));
 	
-	init(gameGrid);
-	sim(gameGrid);
+	init(gameGrid);	// One-time initialize the environment
+	sim(gameGrid);	// Enter infinte loop processing keyboard input and evolving cells
 		
-	endwin();
+	endwin();		// Close the ncurses window
 
-	free(gameGrid);
+	free(gameGrid);	// Free allocated memory
 	return 0;
 }
 
 void init(Cell *grid) {
-	curs_set(1);
+	curs_set(1);		// set cursor to visible normal
 	int MAX_X, MAX_Y;
-	getmaxyx(stdscr, MAX_Y, MAX_X);
-	MAX_Y -=1;
+	getmaxyx(stdscr, MAX_Y, MAX_X);		// get dimensions of the standard screen window
+	MAX_Y -=1;			// make vertical dimension one less than the max window
 
-	for (int i=0; i<MAX_Y; i++) {
-		for (int j=0; j<MAX_X; j++) {
-			grid[i*MAX_X + j].state = 0;
+	// Iterate through entire grid one cell at a time and set to zero
+	// Grid[] is a linear array of type Cell objects,
+	// arranged row to row (end to end), offset pointer determined by sizeof Cell
+	// e.g., Grid[] = (0,0),(1,0),(2,0),(3,0),(0,1),(1,1),(2,1),(3,1),(0,2),(1,2),...
+	// Iterate a row at a time, then increment to next column offset
+	for (int i=0; i<MAX_Y; i++) {			// next row i
+		for (int j=0; j<MAX_X; j++) {		// interate by col j in row i
+			grid[i*MAX_X + j].state = 0;	// set cell to zero
 		}
 	}
 
-	erase();
+	erase();		// Clear the displayed window
 }
 
+/*
+ * Runs the cell evolution as an infinte loop until keystroke stops it
+ * 
+ */
 void sim(Cell *grid) {
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);
 	MAX_Y -= 1;
-	int curr = 1;
+	int curr = 1;	// Set initial cursor state to true
 
 	int ch;
+	// Allocate the next evolution cycle grid
 	Cell *next = malloc(MAX_Y*MAX_X*sizeof(Cell));
 
 	int speed = 100;
@@ -77,6 +91,7 @@ void sim(Cell *grid) {
 	attroff(A_REVERSE | COLOR_PAIR(2));
 	attron(COLOR_PAIR(1));
 
+	// Infinite evolutionary loop. Exit on 'q' keystroke.
 	while (1) {
 		attroff(COLOR_PAIR(1));
 		attron(COLOR_PAIR(2) | A_REVERSE);
@@ -109,19 +124,24 @@ void sim(Cell *grid) {
 		if (!curr) 
 			curs_set(0);
 
+		// Copy the latest evolution of the grid to the display window
 		memcpy(next, grid, sizeof(Cell)*MAX_Y*MAX_X);
 
+		// Evolve the next iteration of the grid and all cells
 		int count = 0;
+		// Column loop
 		for (int i=0; i<MAX_Y; i++) {
+			// Row loop
 			for (int j=0; j<MAX_X; j++) {
+				// Left neighbor, (0,)
 				if (j > 0) count += grid[i*MAX_X + j - 1].state;
 				else count += grid[i*MAX_X + MAX_X-1].state;
-				
+				// Right neighbor, (1,1)
 				if (j < MAX_X-1)
 					count += grid[i*MAX_X + j + 1].state;
 				else 
 					count += grid[i*MAX_X].state;
-
+				// 
 				if (i > 0) 
 					count += grid[(i-1)*MAX_X + j].state;
 				else 
@@ -179,6 +199,7 @@ void sim(Cell *grid) {
 			}
 		}
 
+		// Copy evolved grid to the display grid
 		memcpy(grid, next, sizeof(Cell)*MAX_Y*MAX_X);
 
 		for (int i=0; i<MAX_Y; i++) {
@@ -188,18 +209,18 @@ void sim(Cell *grid) {
 			}
 		}
  
-		iter++;
-
+		iter++;		// Evolution count increment
+		// If user has not pressed a key, i.e., curr != 1, set speed and get current character
 		if (!curr) {
 			timeout(speed);
 			ch = getch();
-		} else {
+		} else {			// Check key pressed
 			timeout(10);
 			while (1) {
 				attron(A_REVERSE);
-				curs_set(1);				
+				curs_set(1);		// Make cursor visible	
 
-				ch = getch();
+				ch = getch();		// Get key pressed
 				
 				if (ch == 'w' || ch == KEY_UP)
 					y--;
@@ -229,6 +250,7 @@ void sim(Cell *grid) {
 				if (ch == '-')
 					speed += 10;
 
+				// Don't run out of grid array bounds vertical(Y) or horizontal(X)
 				if (y > MAX_Y-1)
 					y = MAX_Y-1;
 				if (x > MAX_X-1)
@@ -237,14 +259,18 @@ void sim(Cell *grid) {
 					y = 0;
 				if (x < 0)
 					x = 0;
-
+				
+				// User pressed space, toggle cell alive to dead or dead to alive
 				if (ch == ' ') {
+					// If current cell is alive (i.e., non-zero, kill it by setting to zero
+					// Otherwise keep alive by setting to 1
 					grid[y*MAX_X + x].state = grid[y*MAX_X + x].state ? 0 : 1;
-					move(y, x);
+					move(y, x);	// move cursor to next cell
+					// Insert the state chrarcter at current cursor position
 					addch(grid[y*MAX_X + x].state ? '#' : ' ');
 				}
 		
-				move(y, x);
+				move(y, x);		//  move cursor to selected cell
 			}
 		}
 	}
