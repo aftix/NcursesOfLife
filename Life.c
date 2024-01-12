@@ -29,7 +29,7 @@ int main() {
 	// Set the screen dimensions based on current display
 	int MAXX, MAXY;
 	getmaxyx(stdscr, MAXY, MAXX);
-	MAXY -= 1;	
+	MAXY -= 1;	// Reserve one line at bottom of screen for status display
 
 	// Environment grid is created to be a memory block based on the size of the
 	// ncurses screen dimensions
@@ -48,7 +48,7 @@ void init(Cell *grid) {
 	curs_set(1);		// set cursor to visible normal
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);		// get dimensions of the standard screen window
-	MAX_Y -=1;			// make vertical dimension one less than the max window
+	MAX_Y -=1;			// Reserve bottom line for status
 
 	// Iterate through entire grid one cell at a time and set to zero
 	// Grid[] is a linear array of type Cell objects,
