@@ -71,6 +71,7 @@ void init(Cell *grid) {
 void sim(Cell *grid) {
 	int MAX_X, MAX_Y;
 	getmaxyx(stdscr, MAX_Y, MAX_X);
+	// Reserve bottom line of screen for displaying current count
 	MAX_Y -= 1;
 	int curr = 1;	// Set initial cursor state to true
 
@@ -86,6 +87,7 @@ void sim(Cell *grid) {
 	
 	attroff(COLOR_PAIR(1));
 	attron(A_REVERSE | COLOR_PAIR(2));
+	// Write "Iteration:" on lower left of screen
 	move(MAX_Y, 0);
 	addstr("Iteration: ");
 	attroff(A_REVERSE | COLOR_PAIR(2));
@@ -97,6 +99,7 @@ void sim(Cell *grid) {
 		attron(COLOR_PAIR(2) | A_REVERSE);
 		char tmp[15];
 		sprintf(tmp, "%d", iter);
+		// Write current count to lower left of screen at position x=11
 		move(MAX_Y, 11);
 		addstr(tmp);
 		attroff(A_REVERSE | COLOR_PAIR(2));
