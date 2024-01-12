@@ -127,16 +127,28 @@ void sim(Cell *grid) {
 		// Copy the latest evolution of the grid to the display window
 		memcpy(next, grid, sizeof(Cell)*MAX_Y*MAX_X);
 
-		// Evolve the next iteration of the grid and all cells
+		/* Count living neighbors of each cell, moving through the grid one row at a time
+		 *	i = row, j = col
+		 * 
+		 *	Above left: (-1,-1)
+		 * 	Above: (0,-1)
+		 * 	Above right: (+1,-1)
+		 * 	Left: (-1,0)
+		 * 	Right: (+1,0)
+		 *	Below left: (-1,+1) 
+		 * 	Below: (0,+1)
+		 * 	Below right: (+1,+1)
+		 * 	
+		*/
 		int count = 0;
 		// Column loop
 		for (int i=0; i<MAX_Y; i++) {
 			// Row loop
 			for (int j=0; j<MAX_X; j++) {
-				// Left neighbor, (0,)
-				if (j > 0) count += grid[i*MAX_X + j - 1].state;
+				// Left neighbor, (-1,0)
+				if (j > 0) count += grid[i*MAX_X + j - 1].state;	// Wrapped
 				else count += grid[i*MAX_X + MAX_X-1].state;
-				// Right neighbor, (1,1)
+				// Right neighbor, (+1,0)
 				if (j < MAX_X-1)
 					count += grid[i*MAX_X + j + 1].state;
 				else 
@@ -188,6 +200,7 @@ void sim(Cell *grid) {
 				else if (!(j < MAX_X-1) && !(i < MAX_Y-1))
 					count += grid[0].state;
 				
+				// Evolve the next iteration of the current cell and store in next grid
 				if (count == 3)
 					next[i*MAX_X + j].state = 1;
 				else if (count < 2)
